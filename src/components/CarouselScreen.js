@@ -6,6 +6,7 @@ import { Typography, CircularProgress, Box, Grid } from '@mui/material';
 import axios from 'axios';
 import { styled } from '@mui/system';
 
+// Styled components
 const CarouselContainer = styled(Box)(({ theme }) => ({
   margin: '0 auto',
   width: '80%', // Adjust width
@@ -31,15 +32,15 @@ const CarouselScreen = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        // Use dummy random animal images
-        const dummyImages = [
-          { url: 'https://place-puppy.com/400x400' },
-          { url: 'https://place-puppy.com/300x300' },
-          { url: 'https://place-puppy.com/350x350' },
-          { url: 'https://place-puppy.com/450x450' },
-          { url: 'https://place-puppy.com/320x320' },
+        // Placeholder API (Lorem Picsum) - No API key needed
+        const fetchedImages = [
+          { url: 'https://picsum.photos/400/400', alt_description: 'Random Image 1' },
+          { url: 'https://picsum.photos/300/300', alt_description: 'Random Image 2' },
+          { url: 'https://picsum.photos/350/350', alt_description: 'Random Image 3' },
+          { url: 'https://picsum.photos/450/450', alt_description: 'Random Image 4' },
+          { url: 'https://picsum.photos/320/320', alt_description: 'Random Image 5' },
         ];
-        setImages(dummyImages);
+        setImages(fetchedImages);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching images', error);
@@ -53,7 +54,7 @@ const CarouselScreen = () => {
   return (
     <CarouselContainer>
       <Typography variant="h6" gutterBottom>
-        Animal Carousel
+        Image Carousel
       </Typography>
       {loading ? (
         <CircularProgress />
@@ -64,13 +65,15 @@ const CarouselScreen = () => {
             showStatus={false}
             showIndicators={false}
             infiniteLoop={true}
+            autoPlay={true} // Automatically move the carousel
+            interval={3000} // 3 seconds per slide
             centerMode={true} // Center large image
             centerSlidePercentage={60} // Large central image
             dynamicHeight={true}
           >
             {images.map((image, index) => (
               <Box key={index}>
-                <LargeImage src={image.url} alt={`animal-${index}`} />
+                <LargeImage src={image.url} alt={image.alt_description} />
               </Box>
             ))}
           </Carousel>

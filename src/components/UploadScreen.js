@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Button, LinearProgress, List, ListItem, ListItemText, Typography, Box } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, LinearProgress, List, ListItem, Typography, Box, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import PauseIcon from '@mui/icons-material/Pause';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import axios from 'axios';
 
 const Input = styled('input')({
@@ -10,7 +12,8 @@ const Input = styled('input')({
 const UploadScreen = () => {
   const [files, setFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({});
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [isPaused, setIsPaused] = useState({});
+  const uploadTimers = useRef({}); 
 
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files);
@@ -22,28 +25,53 @@ const UploadScreen = () => {
       newProgress[file.name] = 0;
     });
     setUploadProgress(newProgress);
+
+    const pausedState = {};
+    validFiles.forEach(file => {
+      pausedState[file.name] = false;
+    });
+    setIsPaused(pausedState);
   };
 
-  const handleUpload = async () => {
-    const promises = files.map(file => {
-      const formData = new FormData();
-      formData.append('file', file);
+  useEffect(() => {
+    if (files.length > 0) {
+      startUploads();
+    }
+  }, [files]);
 
-      return axios.post('/upload', formData, {
-        onUploadProgress: (progressEvent) => {
-          setUploadProgress(prevProgress => ({
-            ...prevProgress,
-            [file.name]: Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          }));
+  const simulateUploadProgress = (file) => {
+    return new Promise((resolve) => {
+      let progress = 0;
+      const interval = setInterval(() => {
+        if (isPaused[file.name]) return; 
+
+        progress += 10;
+        setUploadProgress(prevProgress => ({
+          ...prevProgress,
+          [file.name]: progress,
+        }));
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          resolve();
         }
-      }).then(response => {
-        setUploadedFiles(prevFiles => [...prevFiles, file.name]);
-      }).catch(error => {
-        console.error('Upload failed:', error);
-      });
-    });
+      }, 300);
 
-    await Promise.all(promises);
+      uploadTimers.current[file.name] = interval; 
+    });
+  };
+
+  const startUploads = async () => {
+    for (const file of files) {
+      await simulateUploadProgress(file);
+    }
+  };
+
+  const handlePauseResume = (file) => {
+    setIsPaused(prevPaused => ({
+      ...prevPaused,
+      [file.name]: !prevPaused[file.name],
+    }));
   };
 
   return (
@@ -51,15 +79,29 @@ const UploadScreen = () => {
       <Typography variant="h4" gutterBottom>Upload Screen</Typography>
       <label htmlFor="upload-button">
         <Input id="upload-button" type="file" multiple onChange={handleFileChange} />
-        <Button variant="contained" component="span" sx={{ backgroundColor: '#fbc02d', color: '#000', borderRadius: '16px', '&:hover': { backgroundColor: '#f9a825' } }}>Select Files</Button>
+        <Button 
+          variant="contained" 
+          component="span" 
+          sx={{ backgroundColor: '#fbc02d', color: '#000', borderRadius: '16px', '&:hover': { backgroundColor: '#f9a825' } }}
+        >
+          Select Files
+        </Button>
       </label>
+
       <List>
         {files.map(file => (
-          <ListItem key={file.name} sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box sx={{ width: '40%', mr: 1 }}>
+          <ListItem key={file.name} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ width: '80%', mr: 1 }}>
               <LinearProgress variant="determinate" value={uploadProgress[file.name] || 0} />
+              <Typography variant="body2" sx={{ textAlign: 'center' }}>{`${uploadProgress[file.name] || 0}%`}</Typography>
             </Box>
-            <Typography variant="body2" color="textSecondary" sx={{ minWidth: '50px' }}>{`${uploadProgress[file.name] || 0}%`}</Typography>
+            <IconButton 
+              onClick={() => handlePauseResume(file)} 
+              size="small" 
+              sx={{ ml: 2, color: '#fbc02d', position: 'relative', bottom: '8px' }} // Adjust button color and position
+            >
+              {isPaused[file.name] ? <PlayArrowIcon /> : <PauseIcon />}
+            </IconButton>
           </ListItem>
         ))}
       </List>
