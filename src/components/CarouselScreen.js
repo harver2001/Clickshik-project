@@ -3,10 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Typography, CircularProgress, Box, Grid } from '@mui/material';
-import axios from 'axios';
 import { styled } from '@mui/system';
 
-// Styled components
 const CarouselContainer = styled(Box)(({ theme }) => ({
   margin: '0 auto',
   width: '80%', // Adjust width
@@ -32,7 +30,6 @@ const CarouselScreen = () => {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        // Placeholder API (Lorem Picsum) - No API key needed
         const fetchedImages = [
           { url: 'https://picsum.photos/400/400', alt_description: 'Random Image 1' },
           { url: 'https://picsum.photos/300/300', alt_description: 'Random Image 2' },

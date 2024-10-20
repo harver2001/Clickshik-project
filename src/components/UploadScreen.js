@@ -3,7 +3,6 @@ import { Button, LinearProgress, List, ListItem, Typography, Box, IconButton } f
 import { styled } from '@mui/material/styles';
 import PauseIcon from '@mui/icons-material/Pause';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import axios from 'axios';
 
 const Input = styled('input')({
   display: 'none',
