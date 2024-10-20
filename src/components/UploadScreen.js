@@ -75,8 +75,9 @@ const UploadScreen = () => {
   };
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>Upload Screen</Typography>
+    <Box sx={{padding : '25px'}}>
+      <Typography variant="h4" gutterBottom>Upload</Typography>
+      <br />
       <label htmlFor="upload-button">
         <Input id="upload-button" type="file" multiple onChange={handleFileChange} />
         <Button 
@@ -84,7 +85,7 @@ const UploadScreen = () => {
           component="span" 
           sx={{ backgroundColor: '#fbc02d', color: '#000', borderRadius: '16px', '&:hover': { backgroundColor: '#f9a825' } }}
         >
-          Select Files
+         UPLOAD PHOTOS
         </Button>
       </label>
 
@@ -93,12 +94,12 @@ const UploadScreen = () => {
           <ListItem key={file.name} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <Box sx={{ width: '80%', mr: 1 }}>
               <LinearProgress variant="determinate" value={uploadProgress[file.name] || 0} />
-              <Typography variant="body2" sx={{ textAlign: 'center' }}>{`${uploadProgress[file.name] || 0}%`}</Typography>
+              <Typography variant="body2" sx={{ textAlign: 'center' }}>{`${uploadProgress[file.name] || 0}% uploaded`}</Typography>
             </Box>
             <IconButton 
               onClick={() => handlePauseResume(file)} 
               size="small" 
-              sx={{ ml: 2, color: '#fbc02d', position: 'relative', bottom: '8px' }} // Adjust button color and position
+              sx={{ ml: 2, color: '#fbc02d', position: 'relative', bottom: '8px' }} 
             >
               {isPaused[file.name] ? <PlayArrowIcon /> : <PauseIcon />}
             </IconButton>
